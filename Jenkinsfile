@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone repository') {
             steps {
-                echo 'Репозиторий уже клонирован автоматически'
+                echo 'Репозиторий уже  клонирован автоматически'
             }
         }
 
