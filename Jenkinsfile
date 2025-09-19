@@ -4,6 +4,7 @@ pipeline {
     }
 
     stages {
+
         stage('Install dependencies') {
             steps {
                 sh '''
@@ -12,10 +13,10 @@ pipeline {
             }
         }
 
-        stage('Run tests') {
+        stage('Run tests with Allure') {
             steps {
                 sh '''
-                    python main.py
+                    pytest -v --alluredir=./allure-results
                 '''
             }
         }
@@ -23,11 +24,20 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline завершен!'
+            // Генерация Allure отчета
+            allure([
+                includeProperties: false,
+                jdk: '',
+                properties: [],
+                reportBuildPolicy: 'ALWAYS',
+                results: [[path: 'allure-results']]
+            ])
         }
+
         success {
             echo '✅ Все тесты прошли успешно!'
         }
+
         failure {
             echo '❌ Некоторые тесты провалены!'
         }
