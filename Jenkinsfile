@@ -4,12 +4,6 @@ pipeline {
     }
 
     stages {
-        stage('Clone repository') {
-            steps {
-                git 'https://github.com/sfalemex-source/first_git.git'
-            }
-        }
-
         stage('Install dependencies') {
             steps {
                 sh '''
@@ -18,10 +12,10 @@ pipeline {
             }
         }
 
-        stage('Run tests with Allure') {
+        stage('Run tests') {
             steps {
                 sh '''
-                    pytest -v --alluredir=./allure-results
+                    python main.py
                 '''
             }
         }
@@ -29,20 +23,11 @@ pipeline {
 
     post {
         always {
-            // Генерация Allure отчета
-            allure([
-                includeProperties: false,
-                jdk: '',
-                properties: [],
-                reportBuildPolicy: 'ALWAYS',
-                results: [[path: 'allure-results']]
-            ])
+            echo 'Pipeline завершен!'
         }
-
         success {
             echo '✅ Все тесты прошли успешно!'
         }
-
         failure {
             echo '❌ Некоторые тесты провалены!'
         }
