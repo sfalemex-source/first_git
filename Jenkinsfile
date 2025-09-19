@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Clone repository') {
             steps {
-                git 'https://github.com/твой_логин/my-python-project.git'
+                git 'https://github.com/sfalemex-source/first_git.git'
             }
         }
 
