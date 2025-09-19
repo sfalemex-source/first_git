@@ -1,17 +1,27 @@
 pipeline {
-    agent any
+    agent {
+        label 'python'
+    }
 
     stages {
         stage('Clone repository') {
             steps {
-                echo 'Репозиторий уже  клонирован автоматически'
+                git 'https://github.com/твой_логин/my-python-project.git'
             }
         }
 
-        stage('Run tests') {
+        stage('Install dependencies') {
             steps {
                 sh '''
-                    python main.py
+                    pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run tests with Allure') {
+            steps {
+                sh '''
+                    pytest -v --alluredir=./allure-results
                 '''
             }
         }
@@ -19,13 +29,22 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline завершен!'
+            // Генерация Allure отчета
+            allure([
+                includeProperties: false,
+                jdk: '',
+                properties: [],
+                reportBuildPolicy: 'ALWAYS',
+                results: [[path: 'allure-results']]
+            ])
         }
+
         success {
-            echo '✅ Тесты прошли успешно!'
+            echo '✅ Все тесты прошли успешно!'
         }
+
         failure {
-            echo '❌ Тесты провалены!'
+            echo '❌ Некоторые тесты провалены!'
         }
     }
 }
